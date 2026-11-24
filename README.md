@@ -70,7 +70,7 @@ The owner **cannot**:
 
 ```
 contract/   Foundry project: AgentBadge.sol, tests, deploy scripts
-frontend/   Static website (vanilla JS + ethers.js), hosted on GitHub Pages
+docs/       Static website (vanilla JS + ethers.js), hosted on GitHub Pages
 ```
 
 ## Build & test (contract)
@@ -96,10 +96,10 @@ forge test --match-contract AgentBadgeForkTest --fork-url <BSC RPC>
 
 ## Frontend
 
-Static files in `frontend/` — no build step. Open `index.html` via any static
+Static files in `docs/` — no build step. Open `index.html` via any static
 server (or GitHub Pages). The site connects through the injected wallet
 provider only (`window.ethereum`); there is no QR login, no pairing code, and
-no session storage. See `frontend/README-DEPLOY.md` for publishing steps.
+no session storage. See `docs/README-DEPLOY.md` for publishing steps.
 
 ## Security notes
 

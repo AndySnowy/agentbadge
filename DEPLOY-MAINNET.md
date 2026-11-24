@@ -24,5 +24,5 @@
 - Sourcify: **DONE — exact_match** (creation + runtime), verified
   2026-11-24T05:02:27Z. https://sourcify.dev/server/v2/contract/56/0xb7A1FdfDdF6c1Af4A53521670C516c7D8c947C89
 - BscScan: pending — needs the user's BscScan API key
-- Frontend config: DONE — `frontend/config.js` points at mainnet contract
+- Frontend config: DONE — `docs/config.js` points at mainnet contract
 - GitHub repo + Pages: pending — user is AndySnowy on GitHub

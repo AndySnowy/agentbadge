@@ -1,6 +1,6 @@
 # AgentBadge — Deploy Guide (GitHub Pages)
 
-This folder holds the whole AgentBadge front end: plain HTML, CSS, and
+This folder (`docs/`, served by GitHub Pages) holds the whole AgentBadge front end: plain HTML, CSS, and
 JavaScript. No build step, no framework, no server, no API keys. The files
 are:
 
