@@ -9,3 +9,8 @@ contract/broadcast/
 SUBMISSION-ANSWERS.md
 SUBMISSION-CHANNEL.md
 FAUCET-BLOCKER.md
+# Demo video build outputs
+video/node_modules/
+video/raw/
+video/frames/
+video/demo.mp4
