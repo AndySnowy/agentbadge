@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AgentBadge — collectible, non-transferable achievement badges for Agent ID holders. Proof of activity, with no financial value.">
+  <title>AgentBadge — Achievement Badges for Agent ID Holders</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- ethers.js v6 (UMD build, pinned version). Loaded synchronously so it
+       is guaranteed to exist before app.js runs; if the primary CDN fails,
+       the inline fallback loads the same file from unpkg. -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+  <script>window.ethers || document.write('<script src="https://unpkg.com/ethers@6.13.0/dist/ethers.umd.min.js"><\/script>')</script>
+  <script src="config.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <button class="brand" data-nav="home" aria-label="AgentBadge home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0b0e14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 7.7l5.4-.8z"/></svg>
+      </span>
+      AgentBadge
+    </button>
+    <nav aria-label="Main">
+      <button class="nav-btn active" data-nav="home">Home</button>
+      <button class="nav-btn" data-nav="mint">Mint</button>
+      <button class="nav-btn" data-nav="mybadges">My Badges</button>
+      <button class="nav-btn" data-nav="board">Board</button>
+    </nav>
+    <span class="wallet-chip" id="wallet-chip">Wallet not connected</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============================== HOME ============================== -->
+  <div class="view active" id="view-home">
+    <div class="hero">
+      <h1>Show what your agent has done.</h1>
+      <p class="lede">
+        AgentBadge is a set of five collectible achievement badges for Agent ID
+        holders. Each badge is a soulbound token: it stays with the wallet that
+        collected it and can never be transferred. Badges are proof of activity
+        only — they carry <strong>no financial value</strong>.
+      </p>
+    </div>
+
+    <div class="banner warn" id="deploy-banner" hidden>
+      <p><strong>The AgentBadge contract is not deployed yet.</strong></p>
+      <p>Live numbers and minting will appear here once the contract is live. The rest of this page already shows the badge set and the rules.</p>
+    </div>
+
+    <div class="banner bad" id="ethers-banner" hidden>
+      <p><strong>Could not load the ethers.js library from the CDN.</strong></p>
+      <p>Check your connection and reload the page. Wallet features need this library.</p>
+    </div>
+
+    <section aria-label="Live numbers">
+      <div class="stats">
+        <div class="stat">
+          <div class="value" id="stat-total">—</div>
+          <div class="label">Badges collected</div>
+          <div class="note" id="stat-total-note">Live from the contract</div>
+        </div>
+        <div class="stat">
+          <div class="value" id="stat-holders">—</div>
+          <div class="label">Holders</div>
+          <div class="note">Distinct wallets in mint events</div>
+        </div>
+        <div class="stat">
+          <div class="value" id="stat-types">5</div>
+          <div class="label">Badge types</div>
+          <div class="note">One of each per wallet, at most</div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="The badges">
+      <h2>The five badges</h2>
+      <p style="color: var(--muted)">Each wallet can hold at most one of each badge. Eligibility is checked on-chain, in the open, before every mint.</p>
+      <div class="badge-grid" id="home-badge-grid"></div>
+    </section>
+
+    <section aria-label="How it works">
+      <h2>How it works</h2>
+      <div class="panel">
+        <p><strong>1. Connect your wallet</strong> on the Mint page using your browser wallet. AgentBadge only talks to the wallet extension already in your browser — no QR codes, no pairing, no account to create.</p>
+        <p><strong>2. Check eligibility.</strong> The page reads the contract for free and shows which badges your wallet qualifies for.</p>
+        <p><strong>3. Mint.</strong> Each mint is one transaction that you confirm yourself in your wallet. There is no mint fee — you only pay the network gas for the transaction.</p>
+        <p style="margin-bottom:0"><strong>4. Keep it.</strong> Badges are soulbound: they stay in your wallet and cannot be sent, sold, or listed anywhere.</p>
+      </div>
+    </section>
+
+    <section aria-label="Curated collections">
+      <h2>Collections that count toward Collector badges</h2>
+      <p style="color: var(--muted)">Collector I needs NFTs from at least 1 of these 12 collections, Collector II at least 5, Collector III at least 10. Holding several NFTs from the same collection still counts as one collection.</p>
+      <div class="panel">
+        <ul class="collection-list" id="collection-list"></ul>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================== MINT ============================== -->
+  <div class="view" id="view-mint">
+    <div class="hero">
+      <h1>Mint your badges</h1>
+      <p class="lede">Connect your wallet, check which badges you qualify for, and mint the ones you want. Every mint is a transaction you confirm yourself.</p>
+    </div>
+
+    <div class="banner warn" id="mint-deploy-banner" hidden>
+      <p><strong>Minting is not open yet</strong> — the contract has not been deployed. Come back once the deploy is live.</p>
+    </div>
+
+    <section aria-label="Wallet">
+      <div class="panel" id="connect-panel">
+        <h2 style="font-size:1.1rem">Your wallet</h2>
+        <p id="connect-status" style="color: var(--muted)">No wallet connected. Connect with the wallet extension in your browser.</p>
+        <div class="btn-row">
+          <button class="btn primary" id="connect-btn">Connect wallet</button>
+          <button class="btn" id="switch-network-btn" hidden>Switch network</button>
+          <button class="btn" id="disconnect-btn" hidden>Disconnect</button>
+        </div>
+        <p id="network-status" style="color: var(--muted); font-size: 0.9rem; margin: 0.8em 0 0;"></p>
+      </div>
+    </section>
+
+    <section aria-label="Eligibility and minting">
+      <h2>Your badges</h2>
+      <p style="color: var(--muted)" id="mint-intro">Connect your wallet to check eligibility. Eligibility checks are free reads — they cost no gas.</p>
+      <div class="badge-grid" id="mint-badge-grid"></div>
+      <div class="tx-log" id="tx-log" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <!-- ============================== MY BADGES ============================== -->
+  <div class="view" id="view-mybadges">
+    <div class="hero">
+      <h1>My badges</h1>
+      <p class="lede">The badges held by your connected wallet, with the art stored on-chain in each token.</p>
+    </div>
+    <section aria-label="Your badges">
+      <div id="mybadges-empty" class="panel">
+        <p style="margin:0; color: var(--muted)" id="mybadges-empty-text">Connect your wallet on the Mint page to see your badges here.</p>
+      </div>
+      <div class="badge-grid" id="mybadges-grid" hidden></div>
+    </section>
+  </div>
+
+  <!-- ============================== BOARD ============================== -->
+  <div class="view" id="view-board">
+    <div class="hero">
+      <h1>Board</h1>
+      <p class="lede">Recent mints and holder numbers, read live from mint events on-chain.</p>
+    </div>
+
+    <section aria-label="Board numbers">
+      <div class="stats">
+        <div class="stat">
+          <div class="value" id="board-total">—</div>
+          <div class="label">Badges collected</div>
+        </div>
+        <div class="stat">
+          <div class="value" id="board-holders">—</div>
+          <div class="label">Holders</div>
+          <div class="note">Distinct wallets in mint events</div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Recent mints">
+      <h2>Recent mints</h2>
+      <div class="panel">
+        <div id="board-empty" class="empty">No mints found yet.</div>
+        <table id="board-table" hidden>
+          <thead>
+            <tr><th>Badge</th><th>Wallet</th><th class="hide-mobile">Token</th><th>Block</th></tr>
+          </thead>
+          <tbody id="board-body"></tbody>
+        </table>
+        <p id="board-note" style="color: var(--muted-2); font-size: 0.82rem; margin: 0.8em 0 0;"></p>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="disclaimer">
+      <p><strong>Please read:</strong> AgentBadge badges are collectible proof of activity. They have <strong>no financial value</strong>, cannot be transferred, sold, or traded, and promise nothing about the future. Minting only costs network gas. Nothing on this site is an offer of any financial product.</p>
+      <p style="margin-bottom:0">AgentBadge is a hackathon entry built on BNB Chain that uses Agent ID to check who qualifies for each badge. It is not affiliated with any wallet, marketplace, or collection listed here.</p>
+    </div>
+    <p>Contract: <code id="footer-contract">not deployed yet</code> · <span id="footer-network"></span></p>
+  </div>
+</footer>
+
+</body>
+</html>

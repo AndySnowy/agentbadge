@@ -1,0 +1,11 @@
+# Foundry build outputs & dependencies (reinstall with `forge install`)
+contract/lib/
+contract/out/
+contract/cache/
+contract/broadcast/
+# Throwaway testnet keys — never commit
+**/.testnet-key*
+# Internal submission notes (contain personal contact details)
+SUBMISSION-ANSWERS.md
+SUBMISSION-CHANNEL.md
+FAUCET-BLOCKER.md
